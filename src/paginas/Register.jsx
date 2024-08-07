@@ -28,7 +28,7 @@ export const Register = () => {
         e.preventDefault()
         // AXIOS
         try {
-            const url = "http://localhost:3000/api/registro"
+            const url = `${import.meta.env.VITE_BACKEND_URL}/registro`;
             const respuesta = await axios.post(url , form)
             console.log(respuesta)
             setmensaje({
