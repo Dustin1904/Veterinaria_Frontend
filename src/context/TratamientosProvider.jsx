@@ -71,36 +71,39 @@ const TratamientosProvider = ({ children }) => {
 	};
 
 	const eliminarTratamiento = async (id) => {
-		try {
-			await axios.delete(
-				`${import.meta.env.VITE_BACKEND_URL}/tratamiento/${id}`,
-				{
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${localStorage.getItem(
-							"token"
-						)}`,
-					},
-				}
-			);
-			setTratamientos(
-				tratamientos.filter((tratamiento) => tratamiento._id !== id)
-			);
-			setAlertaTratamiento({
-				respuesta: "Tratamiento eliminado con exito",
-				exito: true,
-			});
-			setTimeout(() => {
-				setAlertaTratamiento({});
-			}, 5000);
-		} catch (error) {
-			setAlertaTratamiento({
-				respuesta: error.response.data.res,
-				exito: false,
-			});
-			setTimeout(() => {
-				setAlertaTratamiento({});
-			}, 5000);
+		if (confirm("Esta seguro que desea eliminar el tratamiento??")){
+			try {
+	
+				await axios.delete(
+					`${import.meta.env.VITE_BACKEND_URL}/tratamiento/${id}`,
+					{
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: `Bearer ${localStorage.getItem(
+								"token"
+							)}`,
+						},
+					}
+				);
+				setTratamientos(
+					tratamientos.filter((tratamiento) => tratamiento._id !== id)
+				);
+				setAlertaTratamiento({
+					respuesta: "Tratamiento eliminado con exito",
+					exito: true,
+				});
+				setTimeout(() => {
+					setAlertaTratamiento({});
+				}, 5000);
+			} catch (error) {
+				setAlertaTratamiento({
+					respuesta: error.response.data.res,
+					exito: false,
+				});
+				setTimeout(() => {
+					setAlertaTratamiento({});
+				}, 5000);
+			}
 		}
 	};
 
