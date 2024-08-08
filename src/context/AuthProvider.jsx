@@ -1,91 +1,89 @@
-import axios from "axios"
-import { createContext, useEffect, useState } from "react"
-import { jwtDecode }  from "jwt-decode"
+import axios from "axios";
 
-const AuthContext = createContext()
+import { createContext, useEffect, useState } from "react";
 
-const AuthProvider = ({ children }) => {
-    const [auth, setAuth] = useState({})
+const AuthContext = createContext();
 
-    const perfil = async(token) => {
-        try {
-            const xdDecode = jwtDecode(token);
-            console.log(xdDecode);
-            
-            const url = xdDecode.rol == "veterinario" ? `${import.meta.env.VITE_BACKEND_URL}/perfil` : `${import.meta.env.VITE_BACKEND_URL}/paciente/perfil`
-            const options={
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
-                }
-            }
-            const respuesta= await axios.get(url,options);
-            setAuth(respuesta.data)
-        } catch (error) {
-            console.log(error);
-            
-        }
-    }
+export const AuthProvider = ({ children }) => {
+	const [auth, setAuth] = useState({});
 
-    const actualizarPerfil = async ( datos ) => {
-        const token = localStorage.getItem('token');
-        try {
-            const url = `${import.meta.env.VITE_BACKEND_URL}/veterinario/${ datos._id }`;
-            const options = {
-                headers: {
-                    method: 'PUT',
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
-                }
-            }
-            const respuesta = await axios.put(url, datos, options);
-            perfil(token);
-            return { respuesta : respuesta.data.msg , tipo : true };
-        } catch (error) {
-            return { respuesta : error.response.data.msg , tipo : false };
-        }
-    }
+	const perfil = async (token) => {
+		try {
+			const decode = JSON.parse(atob(token.split(".")[1]));
+			const response = await axios.get(
+				decode.rol === "veterinario"
+					? `${import.meta.env.VITE_BACKEND_URL}/perfil`
+					: `${import.meta.env.VITE_BACKEND_URL}/paciente/perfil`,
+				{
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
 
-    const actualizarPassword = async ( datos ) => {
-        const token = localStorage.getItem('token');
-        try {
-            const url = `${import.meta.env.VITE_BACKEND_URL}/veterinario/actualizarpassword`;
-            const options = {
-                headers: {
-                    method: 'PUT',
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
-                }
-            }
-            const respuesta = await axios.put(url, datos, options);
-            return { respuesta : respuesta.data.msg , tipo : true };
-        } catch (error) {
-            return { respuesta : error.response.data.msg , tipo : false };
-        }
-    }
+			setAuth(response.data);
+		} catch (error) {
+			localStorage.removeItem("token");
+		}
+	};
 
-    useEffect(() => {
-        const token = localStorage.getItem('token')
-        if(token)
-        {
-            perfil(token)
-        }
-    }, [])
-    
-    return (
-        <AuthContext.Provider value={
-            {
-                auth,
-                setAuth,
-                actualizarPerfil,
-                actualizarPassword          
-            }
-        }>
-            {children}
-        </AuthContext.Provider>
-    )
-}
-export {
-    AuthProvider
-}
-export default AuthContext
+	const actualizarPerfil = async (datos) => {
+		const token = localStorage.getItem("token");
+		try {
+			const respuesta = await axios.put(
+				`${import.meta.env.VITE_BACKEND_URL}/veterinario/${datos.id}`,
+				datos,
+				{
+					headers: {
+						method: "PUT",
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
+			perfil(token);
+			return { respuesta: respuesta.data.res, exito: true };
+		} catch (error) {
+			return { respuesta: error.response.data.res, exito: false };
+		}
+	};
+
+	const actualizarPassword = async (datos) => {
+		try {
+			const respuesta = await axios.put(
+				`${
+					import.meta.env.VITE_BACKEND_URL
+				}/veterinario/actualizarpassword`,
+				datos,
+				{
+					headers: {
+						method: "PUT",
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${localStorage.getItem(
+							"token"
+						)}`,
+					},
+				}
+			);
+			return { respuesta: respuesta.data.res, exito: true };
+		} catch (error) {
+			return { respuesta: error.response.data.res, exito: false };
+		}
+	};
+
+	useEffect(() => {
+		const token = localStorage.getItem("token");
+		if (token) perfil(token);
+	}, []);
+
+	return (
+		<AuthContext.Provider
+			value={{ auth, setAuth, actualizarPerfil, actualizarPassword }}
+		>
+			{children}
+		</AuthContext.Provider>
+	);
+};
+
+export { AuthContext };

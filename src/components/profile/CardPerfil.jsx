@@ -1,13 +1,12 @@
 import { useContext } from "react";
-import AuthContext from "../../context/AuthProvider";
+import { AuthContext } from "@context/AuthProvider";
 
 export const CardPerfil = () => {
 	const { auth } = useContext(AuthContext);
-
 	return (
 		<div
 			className="bg-white border border-slate-200 h-auto p-4 
-        flex flex-col items-center justify-between shadow-xl rounded-lg"
+                        flex flex-col items-center justify-between shadow-xl rounded-lg"
 		>
 			<div>
 				<img

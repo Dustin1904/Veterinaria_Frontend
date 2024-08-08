@@ -1,14 +1,10 @@
-import AuthContext from '../context/AuthProvider';
-import { useContext } from 'react';
-import { Forbidden } from '../paginas/Forbidden';
-
+import { useContext } from "react";
+import { Forbidden } from "@pages/Forbidden";
+import { AuthContext } from "@context/AuthProvider";
 
 export default function PrivateRouteWithRole({ children }) {
-    const { auth } = useContext(AuthContext)
+	const { auth } = useContext(AuthContext);
 
-    if ("paciente" === auth.rol) {
-        return <Forbidden/>
-    } else {
-        return children
-    }
+	if (auth.rol !== "veterinario") return <Forbidden />;
+	else return children;
 }
