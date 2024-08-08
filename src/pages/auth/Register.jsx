@@ -34,7 +34,7 @@ export const Register = () => {
 		} catch (error) {
 			setAlerta({
 				respuesta:
-					error.response.data.res || "Rellene todos los campos",
+					error.response.data.res || "Rellene todos los campos correctamente",
 				exito: false,
 			});
 		}
