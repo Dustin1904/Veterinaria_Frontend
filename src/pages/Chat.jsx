@@ -41,7 +41,7 @@ const Chat = () => {
 					emisor: auth._id,
 					nombre: auth.nombre,
 					rol: auth.rol,
-					createdAt: new Date(),
+					createdAt: Date.now(),
 				},
 			]);
 			socket.emit("enviar", {
@@ -49,6 +49,7 @@ const Chat = () => {
 				emisor: auth._id,
 				nombre: auth.nombre,
 				rol: auth.rol,
+				createdAt: Date.now()
 			});
 		}
 	};
